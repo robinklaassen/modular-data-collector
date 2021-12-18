@@ -1,0 +1,14 @@
+log_level: INFO
+sources:
+  -
+    name: NSVehicles
+    api_key: your-key-here
+    request_timeout: 10
+    interval_sec: 10
+    targets:
+      -
+        name: InfluxDB
+        url: your-url-here
+        token: your-token-here
+        organization: your-org-here
+        bucket: your-bucket-here
