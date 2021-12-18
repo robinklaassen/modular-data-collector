@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local config file
+config.yaml
+
+# Scratch pad
+scratch.py

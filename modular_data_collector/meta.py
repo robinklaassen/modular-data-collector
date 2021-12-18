@@ -1,0 +1,7 @@
+__title__ = 'modular_data_collector'
+__version__ = '1.0.0'
+__author__ = 'Robin Klaassen'
+__author_email__ = 'klaassen.robin@gmail.com'
+__description__ = 'A modular data collector. Ingest data from APIs and store wherever!'
+__url__ = 'https://github.com/robinklaassen/modular-data-collector'
+__license__ = 'Copyright'
