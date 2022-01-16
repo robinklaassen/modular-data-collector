@@ -2,19 +2,20 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-from sources.source import BaseDTO
+from modular_data_collector.sources.source import BaseDTO
 
 
 @dataclass
 class TrainLocation:
-    id: int
+    train_id: int
     lat: float
     lng: float
     speed: float
     direction: float
+    train_type: str
 
 
 @dataclass
-class TrainDTO(BaseDTO):  # type: ignore
+class TrainDTO(BaseDTO):
     timestamp: datetime
     locations: List[TrainLocation]

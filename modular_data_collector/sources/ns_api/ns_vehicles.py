@@ -1,11 +1,17 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional, Type, Dict, Any
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Type,
+)
 
 import requests
 
-from sources.NS.train_dto import TrainLocation, TrainDTO
+from modular_data_collector.sources.ns_api.train_dto import TrainDTO, TrainLocation
 from modular_data_collector.sources.source import Source, SourceConfig
 
 _logger = logging.getLogger(__name__)
@@ -34,23 +40,24 @@ class NSVehicles(Source):
 
     def retrieve(self) -> TrainDTO:
         timestamp = datetime.utcnow()
-        r = requests.get(self.base_uri,
-                         headers={'Ocp-Apim-Subscription-Key': self._api_key},
-                         timeout=self._request_timeout)
-        r.raise_for_status()
+        response = requests.get(self.base_uri,
+                                headers={'Ocp-Apim-Subscription-Key': self._api_key},
+                                timeout=self._request_timeout)
+        response.raise_for_status()
 
-        train_locations = self._convert(r.json()['payload']['treinen'])
-        _logger.info("Retrieved %d vehicles from NS API.", len(train_locations))
+        train_locations = self._convert(response.json()['payload']['treinen'])
+        _logger.info("Retrieved %d vehicles from ns_api API.", len(train_locations))
         return TrainDTO(timestamp, train_locations)
 
     def _convert(self, source_data: List[Dict[str, Any]]) -> List[TrainLocation]:
         return [
             TrainLocation(
-                id=t['treinNummer'],
+                train_id=t['treinNummer'],
                 lat=t['lat'],
                 lng=t['lng'],
                 speed=t['snelheid'],
                 direction=t['richting'],
+                train_type=t['type'],
             )
             for t in source_data
         ]

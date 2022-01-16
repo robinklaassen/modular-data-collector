@@ -1,5 +1,9 @@
 import logging
-from typing import Dict, List, Callable
+from typing import (
+    Callable,
+    Dict,
+    List,
+)
 
 import jsons
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -7,7 +11,6 @@ from apscheduler.triggers.cron import CronTrigger
 
 import modular_data_collector.sources as sources_pkg
 import modular_data_collector.targets as targets_pkg
-
 from modular_data_collector.config import Config
 from modular_data_collector.sources.source import Source
 from modular_data_collector.targets.target import Target
@@ -29,7 +32,7 @@ def create_scheduler(config: Config) -> BlockingScheduler:
 
 
 def _construct_job_dict(config: Config) -> Dict[Source, List[Target]]:
-    output: Dict[Source, List[Target]] = dict()
+    output: Dict[Source, List[Target]] = {}
 
     for source_dict in config.sources:
         source_cls = [s for s in sources_pkg.ALL if s.__name__ == source_dict['name']][0]

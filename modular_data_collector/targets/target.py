@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from sources.source import BaseDTO
+from modular_data_collector.sources.source import BaseDTO
 
 
 @dataclass

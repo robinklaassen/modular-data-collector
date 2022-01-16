@@ -1,6 +1,6 @@
 import logging
 
-from sources.source import BaseDTO
+from modular_data_collector.sources.source import BaseDTO
 from modular_data_collector.targets.target import Target
 
 _logger = logging.getLogger(__name__)

@@ -1,10 +1,14 @@
 import logging
 import sys
-from typing import Optional, Dict, Any
+from typing import (
+    Any,
+    Dict,
+    Optional,
+)
 
 import conf
 import jsons
-from jsons.exceptions import SignatureMismatchError, DeserializationError
+from jsons.exceptions import DeserializationError, SignatureMismatchError
 
 from modular_data_collector.config import Config
 from modular_data_collector.scheduler import create_scheduler
@@ -18,7 +22,7 @@ def main(conf_dict: Optional[Dict[str, Any]] = None) -> None:
     config = _setup_config(conf_dict)
 
     if config is None:
-        exit(1)
+        sys.exit(1)
 
     logging.basicConfig(level=config.log_level,
                         format='%(asctime)s | %(name)-50s | %(levelname)-5s | %(message)s',

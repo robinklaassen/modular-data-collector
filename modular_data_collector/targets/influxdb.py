@@ -5,8 +5,8 @@ from typing import Optional, Type
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from sources.NS.train_dto import TrainDTO
-from sources.source import BaseDTO
+from modular_data_collector.sources.ns_api.train_dto import TrainDTO
+from modular_data_collector.sources.source import BaseDTO
 from modular_data_collector.targets.target import Target, TargetConfig
 
 _logger = logging.getLogger(__name__)
@@ -45,7 +45,8 @@ class InfluxDB(Target):
         points = [
             Point("train_locations")
                 .time(data.timestamp)
-                .tag("train_id", loc.id)
+                .tag("train_id", loc.train_id)
+                .tag("train_type", loc.train_type)
                 .field("lat", loc.lat)
                 .field("lng", loc.lng)
                 .field("speed", loc.speed)
