@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Optional, Type, Dict, Any
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Type,
+)
 
 
 @dataclass
