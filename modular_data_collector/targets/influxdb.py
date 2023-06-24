@@ -2,9 +2,11 @@ import logging
 from dataclasses import dataclass
 from typing import Optional, Type
 
-from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+from converters.trains import convert_trains_to_influx
+from converters.vessels import convert_vessels_to_influx
 from modular_data_collector.sources.ais_api.vessel_dto import VesselDTO
 from modular_data_collector.sources.ns_api.train_dto import TrainDTO
 from modular_data_collector.sources.source import BaseDTO
@@ -40,56 +42,19 @@ class InfluxDB(Target):
         return InfluxDBConfig
 
     def store(self, data: BaseDTO) -> None:
+        # TODO auto discover converter functions based on types instead of hard coding
         if isinstance(data, TrainDTO):
-            self._store_train_dto(data)
-        if isinstance(data, VesselDTO):
-            self._store_vessel_dto(data)
-
-    def _store_train_dto(self, data: TrainDTO) -> None:
-        # TODO should consider separating this specific functionality from the generic connection class
-        points = [
-            Point("train_locations")
-            .time(data.timestamp)
-            .tag("train_id", loc.train_id)
-            .tag("train_type", loc.train_type)
-            .field("lat", loc.lat)
-            .field("lng", loc.lng)
-            .field("speed", loc.speed)
-            .field("direction", loc.direction)
-            for loc in data.locations
-        ]
+            points = convert_trains_to_influx(data)
+        elif isinstance(data, VesselDTO):
+            points = convert_vessels_to_influx(data)
+        else:
+            raise AttributeError(f"No converter found for data of class {type(data)}.")
 
         self._client \
             .write_api(write_options=SYNCHRONOUS) \
             .write(self._bucket, self._organization, points)  # TODO consider async fire-and-forget
 
-        _logger.info("Wrote %d train locations to InfluxDB.", len(points))
-
-    def _store_vessel_dto(self, data: VesselDTO):
-        # TODO should consider separating this specific functionality from the generic connection class
-        points = [
-            Point("vessels")
-            .time(vessel.timestamp)
-            .tag("name", vessel.name)
-            .tag("id", vessel.id)
-            .tag("mmsi", vessel.mmsi)
-            .tag("imo", vessel.imo)
-            .tag("callsign", vessel.callsign)
-            .tag("area", vessel.area)
-            .tag("type", vessel.type)
-            .tag("country", vessel.country)
-            .tag("destination", vessel.destination)
-            .field("lat", vessel.lat)
-            .field("lng", vessel.lng)
-            .field("speed", vessel.speed)
-            for vessel in data.vessels
-        ]
-
-        self._client \
-            .write_api(write_options=SYNCHRONOUS) \
-            .write(self._bucket, self._organization, points)  # TODO consider async fire-and-forget
-
-        _logger.info("Wrote %d vessel points to InfluxDB.", len(points))
+        _logger.info("Wrote %d points to InfluxDB.", len(points))
 
     def _create_client(self) -> InfluxDBClient:
 
