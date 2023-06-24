@@ -32,16 +32,20 @@ class VesselInfo:
     name: str
     id: str
     lat: float
-    lon: float
+    lng: float
     timestamp: datetime
     mmsi: str
     imo: str
     callsign: str
     speed: float
-    area: Optional[str]
-    type: Optional[str]
-    country: str
-    destination: Optional[str]
+    area: Optional[str] = None
+    type: Optional[str] = None
+    country: Optional[str] = None
+    destination: Optional[str] = None
+    port_current_id: Optional[str] = None
+    port_current: Optional[str] = None
+    port_next_id: Optional[str] = None
+    port_next: Optional[str] = None
 
 
 @dataclass

@@ -30,12 +30,12 @@ def main(conf_dict: Optional[Dict[str, Any]] = None) -> None:
 
     _logger.info("Running with config: %s", config)
 
-    sched = create_scheduler(config)
-    sched.start()
+    scheduler = create_scheduler(config)
+    scheduler.start()
 
 
 def _setup_config(conf_dict: Dict[str, Any]) -> Optional[Config]:
-    # Setup the config or return None upon failure.
+    # Set up the config or return None upon failure.
     result = None
     try:
         result = jsons.load(conf_dict, cls=Config, strict=True)

@@ -80,7 +80,7 @@ class InfluxDB(Target):
             .tag("country", vessel.country)
             .tag("destination", vessel.destination)
             .field("lat", vessel.lat)
-            .field("lon", vessel.lon)
+            .field("lng", vessel.lng)
             .field("speed", vessel.speed)
             for vessel in data.vessels
         ]

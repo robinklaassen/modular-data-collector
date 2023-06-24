@@ -2,18 +2,13 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import (
-    Any,
-    Dict,
-    List,
     Optional,
-    Type,
+    Type
 )
 
-import jsons
 import requests
 
 from modular_data_collector.sources.ais_api.vessel_dto import VesselDTO, VesselInfo
-from modular_data_collector.sources.ns_api.train_dto import TrainDTO, TrainLocation
 from modular_data_collector.sources.source import Source, SourceConfig
 
 _logger = logging.getLogger(__name__)
@@ -52,24 +47,14 @@ class AISVessels(Source):
         response = requests.get(self._target_uri, timeout=self._request_timeout)
         response.raise_for_status()
 
-        # TODO make this less ugly
-        vessels = [
-            VesselInfo(
-                name=v['name'],
-                id=v['id'],
-                lat=v['lat'],
-                lon=v['lon'],
-                timestamp=datetime.utcfromtimestamp(v['timestamp']).replace(tzinfo=timezone.utc),
-                mmsi=v['mmsi'],
-                imo=v['imo'],
-                callsign=v['callsign'],
-                speed=float(v['speed']),
-                area=v['area'],
-                type=v['type'],
-                country=v['country'],
-                destination=v['destination']
-            )
-            for v in response.json()
-        ]
+        vessels = [self._parse_vessel(d) for d in response.json()]
+
         _logger.info("Retrieved %d vessels from AIS API.", len(vessels))
         return VesselDTO(vessels=vessels)
+
+    def _parse_vessel(self, data: dict) -> VesselInfo:
+        data['lng'] = data.pop('lon')
+        data['timestamp'] = datetime.utcfromtimestamp(data['timestamp']).replace(tzinfo=timezone.utc)
+        data['speed'] = float(data['speed'])
+
+        return VesselInfo(**data)
